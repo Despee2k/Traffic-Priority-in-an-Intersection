@@ -5,7 +5,8 @@
 #include <string.h>
 
 #define MAX 8
-#define MAX_STR_LEN 500
+#define MAX_STR_LEN 400
+#define MAX_SCENARIO 3
 
 typedef struct {
     int priority;
@@ -17,6 +18,10 @@ typedef struct {
     Traffic tr[MAX];
     int lastIndex;
 } POT;
+
+typedef struct {
+    POT p[MAX_SCENARIO];
+} POTArr;
 
 /*
     Priority | Movement
@@ -30,12 +35,12 @@ typedef struct {
         1    |   PD     (Pedestrian on Diversion Lane)
 */
 
-
 void initPOT(POT *p);
 int getParent(int index);
 void insertToPOT(POT *p, Traffic data);
 void getTotalTime(POT *p); // total time before pedestrian on main lane
-
+void trafficToFile(POT *p);
+void trafficToFileWithComma(POTArr *pa, int size);
 
 void initPOT(POT *p){
     p->lastIndex = -1;
@@ -61,21 +66,18 @@ void insertToPOT(POT *p, Traffic data){
 }
 
 void getTotalTime(POT *p){
-    int seconds = 0;
-    int minutes = 0;
-    for(int i = 0; i <= (p->lastIndex) && p->tr[i].priority != 2; i++){
-        int currMinutes = 0;
-        seconds += p->tr[i].time;
-        if(seconds >= 60){
-            currMinutes = seconds / 60;
-            minutes += currMinutes;
-            seconds -= 60 * currMinutes;
+    int totalSeconds = 0;
+    for(int i = 0; i <= (p->lastIndex); i++){
+        if(p->tr[i].priority > 2){
+            totalSeconds += p->tr[i].time;
         }
     }
+    int minutes = totalSeconds / 60;
+    int seconds = totalSeconds % 60;
     if(minutes > 0){
-        printf("TOAL TIME: %d minutes and %d seconds", minutes, seconds);
+        printf("TOTAL TIME: %d minutes and %d seconds\n", minutes, seconds);
     } else {
-        printf("TOTAL TIME: %d seconds", seconds);
+        printf("TOTAL TIME: %d seconds\n", seconds);
     }
 }
 
@@ -98,6 +100,41 @@ void trafficToFile(POT *p) {
                 p->tr[i].time);
         
         strncat(trafficStr, tempStr, sizeof(trafficStr) - strlen(trafficStr) - 1);
+    }
+    
+    fputs(trafficStr, fp);
+    
+    fclose(fp);
+}
+
+void trafficToFileWithComma(POTArr *pa, int size){
+    FILE *fp = fopen("traffic_result.dat", "w");
+    
+    if(fp == NULL){
+        printf("Error opening file!\n");
+        return;
+    }
+    
+    char trafficStr[MAX_STR_LEN * MAX_SCENARIO] = "";
+    char tempStr[50];
+
+    for(int i = 0; i < size; i++){
+        snprintf(tempStr, sizeof(tempStr), "Scenario %d:\n", i + 1);
+        strncat(trafficStr, tempStr, sizeof(trafficStr) - strlen(trafficStr) - 1);
+        
+        for(int j = 0; j <= pa->p[i].lastIndex; j++) {
+            snprintf(tempStr, sizeof(tempStr), 
+                    "Priority: %d, Movement: %s, Time: %d seconds\n", 
+                    pa->p[i].tr[j].priority, 
+                    pa->p[i].tr[j].trafficMovement, 
+                    pa->p[i].tr[j].time);
+            
+            strncat(trafficStr, tempStr, sizeof(trafficStr) - strlen(trafficStr) - 1);
+        }
+        
+        if(i < size - 1) {
+            strncat(trafficStr, "\n", sizeof(trafficStr) - strlen(trafficStr) - 1);
+        }
     }
     
     fputs(trafficStr, fp);
