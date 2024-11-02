@@ -133,7 +133,7 @@ void trafficToFileWithComma(POTArr *pa, int size){
         }
         
         if(i < size - 1) {
-            strncat(trafficStr, "\n", sizeof(trafficStr) - strlen(trafficStr) - 1);
+            strncat(trafficStr, ",\n", sizeof(trafficStr) - strlen(trafficStr) - 1);
         }
     }
     

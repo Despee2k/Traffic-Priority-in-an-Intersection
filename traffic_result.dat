@@ -7,14 +7,14 @@ Priority: 3, Movement: RD, Time: 15 seconds
 Priority: 2, Movement: PM, Time: 12 seconds
 Priority: 5, Movement: LD, Time: 20 seconds
 Priority: 1, Movement: PD, Time: 20 seconds
-
+,
 Scenario 2:
 Priority: 7, Movement: DL, Time: 41 seconds
 Priority: 6, Movement: LM, Time: 29 seconds
 Priority: 2, Movement: RD, Time: 19 seconds
 Priority: 1, Movement: PD, Time: 27 seconds
 Priority: 5, Movement: LD, Time: 15 seconds
-
+,
 Scenario 3:
 Priority: 2, Movement: DL, Time: 12 seconds
 Priority: 1, Movement: LM, Time: 30 seconds
